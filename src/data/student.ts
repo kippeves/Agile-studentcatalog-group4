@@ -29,3 +29,11 @@ const Students: Student[] = [
 ];
 
 export const getStudents = () => Students;
+
+export const deleteStudent = (id: number) => {
+    const studentToRemove = Students.find(x => x.id === Number(id));
+    if (!studentToRemove)
+        return;
+
+    Students.splice(Students.indexOf(studentToRemove), 1);
+}
