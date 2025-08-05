@@ -24,5 +24,6 @@ function renderStudentList(): void {
 */
 function plainListItem(item: Student): HTMLElement {
     let div = document.createElement("div");
+    div.textContent = `${item.id}: ${item.name}`;
     return div;
 }
