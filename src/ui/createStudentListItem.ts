@@ -1,5 +1,5 @@
-import { ICON_PATHS } from "../config";
-import { Student } from "../models/student";
+import { ICON_PATHS } from "../config.js";
+import { Student } from "../models/student.js";
 
 export function createStudentListItem(student: Student): HTMLLIElement {
   const isChecked = student.isActive;
