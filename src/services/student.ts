@@ -1,5 +1,5 @@
-import { getStudents } from "../data/student";
-import { Student } from "../models/student";
+import { getStudents } from "../data/student.js";
+import { Student } from "../models/student.js";
 
 /**
  * Loads all students from storage.
