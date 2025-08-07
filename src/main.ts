@@ -1,15 +1,14 @@
-
+import { Student } from "./models/student.js";
 import { getRequiredElement } from "./utils/domHelpers.js";
+import { generateId } from "./utils/generateId.js";
 import { checkIfDataIsInitialized} from "./services/student.js";
 import { createStudentListItem } from "./ui/createStudentListItem.js";
 import { load } from "./data/student.js";
-
 const listContainer = getRequiredElement<HTMLUListElement>("#student-list");
 const frmAddUser = getRequiredElement<HTMLFormElement>("form.add-user-form");
 const inputName = getRequiredElement<HTMLInputElement>("#name", frmAddUser);
 const inputAge = getRequiredElement<HTMLInputElement>("#age", frmAddUser);
 const cbIsActive = getRequiredElement<HTMLInputElement>("#isActive", frmAddUser);
-const btnAddUser = getRequiredElement<HTMLButtonElement>("button", frmAddUser);
 
 checkIfDataIsInitialized();
 renderStudentList();
@@ -28,21 +27,15 @@ function renderStudentList(): void {
     listContainer.appendChild(item);
 }
 
-frmAddUser.addEventListener("click", (e) => {
-    const { target } = e;
-    switch (target) {
-        case btnAddUser:
-            e.preventDefault();
-            const age = Number(inputAge.value?.trim());
-            const student = {
-                name: inputName.value?.trim(),
-                age: Number.isInteger(age) ? Number(age) : age,
-                isActive: cbIsActive.checked
-            };
+frmAddUser.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const age = Number(inputAge.value?.trim());
+    const student: Student = {
+        id: generateId(undefined, load()),
+        name: inputName.value?.trim(),
+        age: Number.isInteger(age) ? Number(age) : age,
+        isActive: cbIsActive.checked
+    };
 
-            student.name && student.age && Number.isInteger(student.age) && (() => {
-                console.log("Add user ...");
-            })();
-            break;
-    }
+    student.name && student.age && Number.isInteger(student.age) && (() => createStudent(student))();
 });
