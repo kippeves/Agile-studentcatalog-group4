@@ -1,4 +1,4 @@
-import { Student } from "./models/student";
+import { Student } from "./models/student.js";
 
 export const Students: Student[] = [
     { id: 100, name: "Erik Johansson", age: 22, isActive: true },
