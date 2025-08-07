@@ -1,5 +1,8 @@
-import { Student } from "./models/student.js";
+
 import { getRequiredElement } from "./utils/domHelpers.js";
+import { Student } from "./models/student.js";
+import { loadStudents } from "./services/student.js";
+import { createStudentListItem } from "./ui/createStudentListItem.js";
 
 export const Students: Student[] = [
     { id: 100, name: "Erik Johansson", age: 22, isActive: true },
@@ -29,11 +32,26 @@ export const Students: Student[] = [
     { id: 124, name: "Leo Åberg", age: 21, isActive: false }
 ];
 
+const listContainer = getRequiredElement<HTMLUListElement>("#student-ul");
 const frmAddUser = getRequiredElement<HTMLFormElement>("form.add-user-form");
 const inputName = getRequiredElement<HTMLInputElement>("#name", frmAddUser);
 const inputAge = getRequiredElement<HTMLInputElement>("#age", frmAddUser);
 const cbIsActive = getRequiredElement<HTMLInputElement>("#isActive", frmAddUser);
 const btnAddUser = getRequiredElement<HTMLButtonElement>("button", frmAddUser);
+
+renderStudentList();
+
+function renderStudentList(): void {
+    listContainer.textContent = "";
+    // Placeholder array
+    const students: Student[] = loadStudents();
+    students.forEach((item) => listContainer.appendChild(createStudentListItem(item)));
+    if (students.length > 0)
+        return;
+    const item = document.createElement("li");
+    item.textContent = "Listan är tom...";
+    listContainer.appendChild(item);
+}
 
 frmAddUser.addEventListener("click", (e) => {
     const { target } = e;
