@@ -29,11 +29,11 @@ export const Students: Student[] = [
     { id: 124, name: "Leo Åberg", age: 21, isActive: false }
 ];
 
-const frmAddUser = getRequiredElement("form.add-user-form") as HTMLFormElement;
-const inputName = getRequiredElement("#name", frmAddUser) as HTMLInputElement;
-const inputAge = getRequiredElement("#age", frmAddUser) as HTMLInputElement;
-const cbIsActive = getRequiredElement("#isActive", frmAddUser) as HTMLInputElement;
-const btnAddUser = getRequiredElement("button", frmAddUser) as HTMLButtonElement;
+const frmAddUser = getRequiredElement<HTMLFormElement>("form.add-user-form");
+const inputName = getRequiredElement<HTMLInputElement>("#name", frmAddUser);
+const inputAge = getRequiredElement<HTMLInputElement>("#age", frmAddUser);
+const cbIsActive = getRequiredElement<HTMLInputElement>("#isActive", frmAddUser);
+const btnAddUser = getRequiredElement<HTMLButtonElement>("button", frmAddUser);
 
 frmAddUser.addEventListener("click", (e) => {
     const { target } = e;
