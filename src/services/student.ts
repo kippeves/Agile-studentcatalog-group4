@@ -1,17 +1,16 @@
 import { load, save } from "../data/student.js";
 import { Student } from "../models/student.js";
 
-/**
- * Loads all students from storage.
- * @returns Array of 'Student' objects, or empty array.
- */
-export function loadStudents(): Student[] {
-  return load() || [];
+
+export function checkIfDataIsInitialized() {
+  const studentList = load();
+  if (studentList === undefined) // "Index is initialized previously"
+    initializeData();
 }
 
 
 export const deleteStudent = (id: number) => {
-  const studentList = loadStudents();
+  const studentList = load();
   const studentToRemove = studentList?.find(x => x.id === Number(id));
   if (!(studentList && studentToRemove))
     return;
