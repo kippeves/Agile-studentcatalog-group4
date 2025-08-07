@@ -3,11 +3,10 @@ import { getRequiredElement } from "./utils/domHelpers.js";
 import { Student } from "./models/student.js";
 import { initializeData, loadStudents } from "./services/student.js";
 import { createStudentListItem } from "./ui/createStudentListItem.js";
-import { getStudents } from "./data/student.js";
 
 const listContainer = getRequiredElement("#student-ul") as HTMLUListElement;
 
-const studentList = getStudents();
+const studentList = loadStudents();
 if (studentList === undefined) // "Index is initialized previously"
     initializeData();
 

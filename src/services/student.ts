@@ -1,4 +1,4 @@
-import { getStudents, saveStudents } from "../data/student.js";
+import { load, save } from "../data/student.js";
 import { Student } from "../models/student.js";
 
 /**
@@ -6,7 +6,16 @@ import { Student } from "../models/student.js";
  * @returns Array of 'Student' objects, or empty array.
  */
 export function loadStudents(): Student[] {
-  return getStudents() || [];
+  return load() || [];
+}
+
+
+export const deleteStudent = (id: number) => {
+  const studentList = loadStudents();
+  const studentToRemove = studentList?.find(x => x.id === Number(id));
+  if (!(studentList && studentToRemove))
+    return;
+  save({ data: studentList.splice(studentList.indexOf(studentToRemove), 1) })
 }
 
 export function initializeData() {
@@ -37,5 +46,5 @@ export function initializeData() {
     { id: 123, name: "Tilde Hellström", age: 22, isActive: true },
     { id: 124, name: "Leo Åberg", age: 21, isActive: false }
   ];
-  saveStudents({ data: initialData });
+  save({ data: initialData });
 }
