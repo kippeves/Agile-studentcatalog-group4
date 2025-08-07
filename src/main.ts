@@ -1,7 +1,7 @@
 
 import { getRequiredElement } from "./utils/domHelpers.js";
 import { Student } from "./models/student.js";
-import { loadStudents } from "./services/student.js";
+import { initializeData, loadStudents } from "./services/student.js";
 import { createStudentListItem } from "./ui/createStudentListItem.js";
 
 const listContainer = getRequiredElement<HTMLUListElement>("#student-list");
@@ -10,6 +10,10 @@ const inputName = getRequiredElement<HTMLInputElement>("#name", frmAddUser);
 const inputAge = getRequiredElement<HTMLInputElement>("#age", frmAddUser);
 const cbIsActive = getRequiredElement<HTMLInputElement>("#isActive", frmAddUser);
 const btnAddUser = getRequiredElement<HTMLButtonElement>("button", frmAddUser);
+
+const studentList = loadStudents();
+if (studentList === undefined) // "Index is initialized previously"
+    initializeData();
 
 renderStudentList();
 
