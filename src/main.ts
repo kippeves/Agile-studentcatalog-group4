@@ -46,10 +46,10 @@ frmAddUser.addEventListener("click", (e) => {
                 age: Number.isInteger(age) ? Number(age) : age,
                 isActive: cbIsActive.checked
             };
-                        
+
             student.name && student.age && Number.isInteger(student.age) && (() => {
                 console.log("Add user ...");
             })();
-        break;
+            break;
     }
 });
