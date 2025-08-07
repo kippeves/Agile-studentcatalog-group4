@@ -4,7 +4,7 @@ import { Student } from "./models/student.js";
 import { initializeData, loadStudents, updateStudent } from "./services/student.js";
 import { createStudentListItem } from "./ui/createStudentListItem.js";
 
-const listContainer = getRequiredElement("#student-ul") as HTMLUListElement;
+const listContainer = getRequiredElement<HTMLUListElement>("#student-ul");
 
 const studentList = loadStudents();
 if (studentList === undefined) // "Index is initialized previously"
