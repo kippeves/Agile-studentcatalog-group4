@@ -4,7 +4,7 @@ import { Student } from "./models/student.js";
 import { loadStudents } from "./services/student.js";
 import { createStudentListItem } from "./ui/createStudentListItem.js";
 
-const listContainer = getRequiredElement("#student-list") as HTMLUListElement;
+const listContainer = getRequiredElement("#student-ul") as HTMLUListElement;
 
 renderStudentList();
 
