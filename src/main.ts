@@ -1,5 +1,4 @@
-import { Student } from "./models/student.js";
-import { getRequiredElement } from "./utils/domHelpers.js";
+import { Student } from "./models/student";
 
 export const Students: Student[] = [
     { id: 100, name: "Erik Johansson", age: 22, isActive: true },
@@ -28,28 +27,3 @@ export const Students: Student[] = [
     { id: 123, name: "Tilde Hellström", age: 22, isActive: true },
     { id: 124, name: "Leo Åberg", age: 21, isActive: false }
 ];
-
-const frmAddUser = getRequiredElement("form.add-user-form") as HTMLFormElement;
-const inputName = getRequiredElement("#name", frmAddUser) as HTMLInputElement;
-const inputAge = getRequiredElement("#age", frmAddUser) as HTMLInputElement;
-const cbIsActive = getRequiredElement("#isActive", frmAddUser) as HTMLInputElement;
-const btnAddUser = getRequiredElement("button", frmAddUser) as HTMLButtonElement;
-
-frmAddUser.addEventListener("click", (e) => {
-    const { target } = e;
-    switch (target) {
-        case btnAddUser:
-            e.preventDefault();
-            const age = Number(inputAge.value?.trim());
-            const student = {
-                name: inputName.value?.trim(),
-                age: Number.isInteger(age) ? Number(age) : age,
-                isActive: cbIsActive.checked
-            };
-                        
-            student.name && student.age && Number.isInteger(student.age) && (() => {
-                console.log("Add user ...");
-            })();
-        break;
-    }
-});
