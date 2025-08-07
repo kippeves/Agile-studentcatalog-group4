@@ -1,7 +1,7 @@
 
 import { getRequiredElement } from "./utils/domHelpers.js";
 import { Student } from "./models/student.js";
-import { initializeData, loadStudents } from "./services/student.js";
+import { initializeData, loadStudents, updateStudent } from "./services/student.js";
 import { createStudentListItem } from "./ui/createStudentListItem.js";
 
 const listContainer = getRequiredElement("#student-ul") as HTMLUListElement;
@@ -40,13 +40,10 @@ function toggleStudentActive(target: HTMLElement): void {
     if (val === undefined || isNaN(parseInt(val)))
         return;
 
-    const students: Student[] = loadStudents();
-    const index = students.findIndex(item => item.id === parseInt(val));
-    if (index < 0 || students[index] === undefined)
+    const foundStudent = studentList?.find(x => x.id === parseInt(val));
+    if (foundStudent === undefined)
         return;
-    let student = students[index];
-    student.isActive = input.checked;
 
-    students[index] = student;
-    //
+    updateStudent(foundStudent);
+    renderStudentList();
 }

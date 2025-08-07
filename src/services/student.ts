@@ -18,6 +18,22 @@ export const deleteStudent = (id: number) => {
   save({ data: studentList.splice(studentList.indexOf(studentToRemove), 1) })
 }
 
+export const updateStudent = (student: Student) => {
+  const studentList = loadStudents();
+
+  const index = studentList?.findIndex(d => d.id === student.id);
+  if (index < 0)
+    return;
+
+  const studentToUpdate = studentList[index];
+  if (!studentToUpdate)
+    return;
+
+  studentToUpdate.isActive = student.isActive;
+  studentList[index] = studentToUpdate;
+  save({ data: studentList })
+}
+
 export function initializeData() {
   const initialData: Student[] = [
     { id: 100, name: "Erik Johansson", age: 22, isActive: true },
