@@ -1,6 +1,5 @@
 import { load, save } from "../data/student.js";
-import { Student } from "../models/student.js";
-
+import { Student } from "../models/student.js"
 
 export function checkIfDataIsInitialized() {
   const studentList = load();
@@ -8,6 +7,13 @@ export function checkIfDataIsInitialized() {
     initializeData();
 }
 
+export const getStudents = () => {
+  let studentList = load();
+  if(studentList === undefined) {
+    return [];
+  }
+  return studentList;
+}
 
 export const deleteStudent = (id: number) => {
   const studentList = load();
@@ -19,8 +25,26 @@ export const deleteStudent = (id: number) => {
 
 export function createStudent(student: Student): Student {
   const studentList = load();
-  studentList !== undefined && studentList.push(student) && save({data: studentList});
+  studentList !== undefined && studentList.push(student) && save({ data: studentList });
   return student; // for chaining possibillities
+}
+
+export const updateStudent = (student: Student) => {
+  const studentList = getStudents();
+  if (studentList === undefined)
+    return;
+
+  const index = studentList?.findIndex(d => d.id === student.id);
+  if (index < 0)
+    return;
+
+  const studentToUpdate = studentList[index];
+  if (!studentToUpdate)
+    return;
+
+  studentToUpdate.isActive = student.isActive;
+  studentList[index] = studentToUpdate;
+  save({ data: studentList })
 }
 
 export function initializeData() {
