@@ -1,3 +1,4 @@
+import { Student } from "./models/student.js";
 const iconsRoot = "./assets/icons/";
 
 export const ICON_PATHS = {
@@ -8,3 +9,5 @@ export const BUTTON_ACTIONS = {
   DELETE_STUDENT: "delete-student",
   TOGGLE_ACTIVE: "toggle-active",
 } as const;
+
+export type StudentSortKeysType = keyof Omit<Student, "id">;

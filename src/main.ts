@@ -1,8 +1,6 @@
 import { BUTTON_ACTIONS } from "./config.js";
 import { Student } from "./models/student.js";
 import {
-  checkIfDataIsInitialized,
-  createStudent,
   getStudents,
   updateStudent,
   deleteStudent,
@@ -10,14 +8,25 @@ import {
 import { renderStudentList } from "./ui/studentList.js";
 import { getRequiredElement } from "./utils/domHelpers.js";
 import { generateId } from "./utils/generateId.js";
+import { checkIfDataIsInitialized, createStudent } from "./services/student.js";
+import { load } from "./data/student.js";
+import { StudentSortKeysType } from "./config.js";
+import { returnSortedList } from "./ui/sortStudentList.js";
+
+const listContainer = getRequiredElement<HTMLUListElement>("#student-ul");
+const select = getRequiredElement<HTMLSelectElement>("#sort-areas")
+const frmSort = getRequiredElement<HTMLFormElement>("form#sort-form");
+
+addSortAreas();
+checkIfDataIsInitialized();
+loadStudentList();
 
 function handleStudentDeletion(
-  listContainer: HTMLElement,
   studentId: number
 ): void {
   try {
     deleteStudent(studentId);
-    renderStudentList(listContainer);
+    loadStudentList();
   } catch (error) {
     alert("Could not delete student - please refresh the page");
   }
@@ -34,10 +43,10 @@ function toggleStudentActive(target: HTMLElement): void {
 
   foundStudent.isActive = input.checked;
   updateStudent(foundStudent);
+  loadStudentList();
 }
 
 function handleStudentListClick(e: MouseEvent): void {
-  const listContainer = e.currentTarget as HTMLLIElement;
   const target = e.target as HTMLElement;
 
   // Find parent button of the target
@@ -55,13 +64,35 @@ function handleStudentListClick(e: MouseEvent): void {
   // Call appropriate function for action
   switch (action) {
     case BUTTON_ACTIONS.DELETE_STUDENT:
-      handleStudentDeletion(listContainer, studentId);
+      handleStudentDeletion(studentId);
       break;
     case BUTTON_ACTIONS.TOGGLE_ACTIVE:
       toggleStudentActive(target);
-      renderStudentList(listContainer);
+      loadStudentList();
       break;
   }
+}
+
+listContainer.addEventListener("click", handleStudentListClick);
+loadStudentList();
+
+function loadStudentList() {
+  const initialList = load();
+  if (!initialList)
+    return;
+  renderStudentList(initialList, listContainer);
+}
+
+function addSortAreas() {
+  type selectOpt = { value: string; text: string; };
+  let options: selectOpt[] = [{ value: "name", text: "Name" }, { value: "age", "text": "Age", }, { value: "isActive", text: "Is Active" }];
+  let items = options.map(i => {
+    const option = document.createElement("option");
+    option.value = i.value;
+    option.text = i.text;
+    return option;
+  });
+  select.replaceChildren(...[select.children[0]!, ...items]);
 }
 
 function intialisePage(): void {
@@ -78,26 +109,37 @@ function intialisePage(): void {
   // Add event listeners
   listContainer.addEventListener("click", handleStudentListClick);
 
-  frmAddUser.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const age = Number(inputAge.value?.trim());
-    const student: Student = {
-      id: generateId(undefined, getStudents()),
-      name: inputName.value?.trim(),
-      age: Number.isInteger(age) ? Number(age) : age,
-      isActive: cbIsActive.checked,
-    };
+frmSort.addEventListener("submit", e => {
+  e.preventDefault();
+  const data = new FormData(frmSort);
+  const area = data.get("areas") as StudentSortKeysType;
+  const order = data.get("order")?.toString();
+  if (!order)
+    return;
+  const sortedStudentList = returnSortedList(area, order)
+  renderStudentList(sortedStudentList!, listContainer);
+})
 
-    student.name &&
-      student.age &&
-      Number.isInteger(student.age) &&
-      createStudent(student) &&
-      renderStudentList(listContainer);
-  });
+frmAddUser.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const age = Number(inputAge.value?.trim());
+  const student: Student = {
+    id: generateId(undefined, getStudents()),
+    name: inputName.value?.trim(),
+    age: Number.isInteger(age) ? Number(age) : age,
+    isActive: cbIsActive.checked,
+  };
 
-  // Initialise data and render list
-  checkIfDataIsInitialized();
-  renderStudentList(listContainer);
+  student.name &&
+    student.age &&
+    Number.isInteger(student.age) &&
+    createStudent(student) &&
+    loadStudentList();
+});
+
+// Initialise data and render list
+checkIfDataIsInitialized();
+loadStudentList();
 }
 
 // Entry point
