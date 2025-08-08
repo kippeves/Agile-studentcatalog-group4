@@ -11,6 +11,19 @@
 
 <body>
   <h1>Student list</h1>
+  <form id="sort-form">
+    <fieldset>
+      <legend>Sort List</legend>
+      <select name="areas" id="sort-areas" required>
+        <option value="">--Please choose an option--</option>
+      </select>
+      <select name="order" id="sort-order">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+      </select>
+      <button>Sort</button>
+    </fieldset>
+  </form>
   <div id="student-list"></div>
   <form class="add-user-form">
     <fieldset>
