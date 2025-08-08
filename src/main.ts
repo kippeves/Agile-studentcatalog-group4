@@ -8,7 +8,9 @@ const frmAddUser = getRequiredElement<HTMLFormElement>("form.add-user-form");
 const inputName = getRequiredElement<HTMLInputElement>("#name", frmAddUser);
 const inputAge = getRequiredElement<HTMLInputElement>("#age", frmAddUser);
 const cbIsActive = getRequiredElement<HTMLInputElement>("#isActive", frmAddUser);
+const inputSearch = getRequiredElement<HTMLInputElement>("#student-search");
 const listContainer = getRequiredElement<HTMLUListElement>("#student-ul");
+let searchTimeout: any;
 
 checkIfDataIsInitialized();
 renderStudentList();
@@ -20,6 +22,17 @@ listContainer.addEventListener("click", (event) => {
             toggleStudentActive(target);
             break;
     }
+});
+
+inputSearch.addEventListener("input", (event) => {
+    const target = event.target as HTMLInputElement;
+    if(searchTimeout !== undefined) {
+        window.clearTimeout(searchTimeout);
+    }
+    searchTimeout = window.setTimeout(() => {
+        findStudents(target.value);
+    },500);
+    
 });
 
 function renderStudentList(): void {
@@ -63,4 +76,9 @@ function toggleStudentActive(target: HTMLElement): void {
     foundStudent.isActive = input.checked;
     updateStudent(foundStudent);
     renderStudentList();
+}
+
+function findStudents(search: string): void {
+    console.log(search);
+    
 }
