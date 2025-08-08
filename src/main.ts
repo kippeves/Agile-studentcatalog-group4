@@ -1,10 +1,15 @@
-
+import { Student } from "./models/student.js";
 import { getRequiredElement } from "./utils/domHelpers.js";
-import { checkIfDataIsInitialized} from "./services/student.js";
+import { generateId } from "./utils/generateId.js";
+import { checkIfDataIsInitialized, createStudent } from "./services/student.js";
 import { createStudentListItem } from "./ui/createStudentListItem.js";
 import { load } from "./data/student.js";
 
-const listContainer = getRequiredElement("#student-ul") as HTMLUListElement;
+const listContainer = getRequiredElement<HTMLUListElement>("#student-list");
+const frmAddUser = getRequiredElement<HTMLFormElement>("form.add-user-form");
+const inputName = getRequiredElement<HTMLInputElement>("#name", frmAddUser);
+const inputAge = getRequiredElement<HTMLInputElement>("#age", frmAddUser);
+const cbIsActive = getRequiredElement<HTMLInputElement>("#isActive", frmAddUser);
 
 checkIfDataIsInitialized();
 renderStudentList();
@@ -22,3 +27,16 @@ function renderStudentList(): void {
     item.textContent = "Listan är tom...";
     listContainer.appendChild(item);
 }
+
+frmAddUser.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const age = Number(inputAge.value?.trim());
+    const student: Student = {
+        id: generateId(undefined, load()),
+        name: inputName.value?.trim(),
+        age: Number.isInteger(age) ? Number(age) : age,
+        isActive: cbIsActive.checked
+    };
+
+    student.name && student.age && Number.isInteger(student.age) && createStudent(student) && renderStudentList();
+});
