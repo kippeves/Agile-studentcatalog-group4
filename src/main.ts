@@ -1,9 +1,10 @@
 import { Student } from "./models/student.js";
 import { getRequiredElement } from "./utils/domHelpers.js";
 import { generateId } from "./utils/generateId.js";
-import { checkIfDataIsInitialized} from "./services/student.js";
+import { checkIfDataIsInitialized, createStudent } from "./services/student.js";
 import { createStudentListItem } from "./ui/createStudentListItem.js";
 import { load } from "./data/student.js";
+
 const listContainer = getRequiredElement<HTMLUListElement>("#student-list");
 const frmAddUser = getRequiredElement<HTMLFormElement>("form.add-user-form");
 const inputName = getRequiredElement<HTMLInputElement>("#name", frmAddUser);
@@ -37,5 +38,5 @@ frmAddUser.addEventListener("submit", (e) => {
         isActive: cbIsActive.checked
     };
 
-    student.name && student.age && Number.isInteger(student.age) && (() => createStudent(student))();
+    student.name && student.age && Number.isInteger(student.age) && createStudent(student) && renderStudentList();
 });
