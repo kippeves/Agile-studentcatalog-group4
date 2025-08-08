@@ -1,12 +1,16 @@
 import { load, save } from "../data/student.js";
 import { Student } from "../models/student.js"
 
+export function checkIfDataIsInitialized() {
+  const studentList = load();
+  if (studentList === undefined) // "Index is initialized previously"
+    initializeData();
+}
+
 export const getStudents = () => {
   let studentList = load();
   if(studentList === undefined) {
-    console.info("initializeData");
-    initializeData();
-    studentList = load();
+    return [];
   }
   return studentList;
 }
@@ -21,7 +25,7 @@ export const deleteStudent = (id: number) => {
 
 export function createStudent(student: Student): Student {
   const studentList = load();
-  studentList !== undefined && studentList.push(student) && save({data: studentList});
+  studentList !== undefined && studentList.push(student) && save({ data: studentList });
   return student; // for chaining possibillities
 }
 
@@ -29,7 +33,7 @@ export const updateStudent = (student: Student) => {
   const studentList = getStudents();
   if (studentList === undefined)
     return;
-  
+
   const index = studentList?.findIndex(d => d.id === student.id);
   if (index < 0)
     return;

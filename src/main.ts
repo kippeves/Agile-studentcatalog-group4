@@ -1,7 +1,7 @@
 import { Student } from "./models/student.js";
 import { getRequiredElement } from "./utils/domHelpers.js";
 import { generateId } from "./utils/generateId.js";
-import { getStudents, createStudent, updateStudent } from "./services/student.js";
+import { checkIfDataIsInitialized, getStudents, createStudent, updateStudent } from "./services/student.js";
 import { createStudentListItem } from "./ui/createStudentListItem.js";
 
 const frmAddUser = getRequiredElement<HTMLFormElement>("form.add-user-form");
@@ -10,6 +10,7 @@ const inputAge = getRequiredElement<HTMLInputElement>("#age", frmAddUser);
 const cbIsActive = getRequiredElement<HTMLInputElement>("#isActive", frmAddUser);
 const listContainer = getRequiredElement<HTMLUListElement>("#student-ul");
 
+checkIfDataIsInitialized();
 renderStudentList();
 
 listContainer.addEventListener("click", (event) => {
