@@ -7,8 +7,12 @@ function handleStudentDeletion(
   listContainer: HTMLElement,
   studentId: number
 ): void {
-  deleteStudent(studentId);
-  renderStudentList(listContainer);
+  try {
+    deleteStudent(studentId);
+    renderStudentList(listContainer);
+  } catch (error) {
+    alert("Could not delete student - please refresh the page");
+  }
 }
 
 function handleStudentListClick(e: MouseEvent): void {
