@@ -7,29 +7,17 @@ import {
   updateStudent,
   deleteStudent,
 } from "./services/student.js";
-import { createStudentListItem } from "./ui/createStudentListItem.js";
+import { renderStudentList } from "./ui/studentList.js";
 import { getRequiredElement } from "./utils/domHelpers.js";
 import { generateId } from "./utils/generateId.js";
 
-const listContainer = getRequiredElement<HTMLUListElement>("#student-ul");
-const frmAddUser = getRequiredElement<HTMLFormElement>("form.add-user-form");
-const inputName = getRequiredElement<HTMLInputElement>("#name", frmAddUser);
-const inputAge = getRequiredElement<HTMLInputElement>("#age", frmAddUser);
-const cbIsActive = getRequiredElement<HTMLInputElement>(
-  "#isActive",
-  frmAddUser
-);
-
-checkIfDataIsInitialized();
-renderStudentList();
-
 function handleStudentDeletion(
-  // listContainer: HTMLElement,
+  listContainer: HTMLElement,
   studentId: number
 ): void {
   try {
     deleteStudent(studentId);
-    renderStudentList();
+    renderStudentList(listContainer);
   } catch (error) {
     alert("Could not delete student - please refresh the page");
   }
@@ -46,11 +34,10 @@ function toggleStudentActive(target: HTMLElement): void {
 
   foundStudent.isActive = input.checked;
   updateStudent(foundStudent);
-  renderStudentList();
 }
 
 function handleStudentListClick(e: MouseEvent): void {
-  // const container = e.currentTarget as HTMLLIElement;
+  const listContainer = e.currentTarget as HTMLLIElement;
   const target = e.target as HTMLElement;
 
   // Find parent button of the target
@@ -68,43 +55,50 @@ function handleStudentListClick(e: MouseEvent): void {
   // Call appropriate function for action
   switch (action) {
     case BUTTON_ACTIONS.DELETE_STUDENT:
-      handleStudentDeletion(studentId);
+      handleStudentDeletion(listContainer, studentId);
       break;
     case BUTTON_ACTIONS.TOGGLE_ACTIVE:
       toggleStudentActive(target);
+      renderStudentList(listContainer);
       break;
   }
 }
 
-listContainer.addEventListener("click", handleStudentListClick);
-
-function renderStudentList(): void {
-  listContainer.textContent = "";
-  // Placeholder array
-  const students = getStudents();
-  if (!students) return;
-  students.forEach((item) =>
-    listContainer.appendChild(createStudentListItem(item))
+function intialisePage(): void {
+  // Find DOM elements
+  const listContainer = getRequiredElement<HTMLUListElement>("#student-ul");
+  const frmAddUser = getRequiredElement<HTMLFormElement>("form.add-user-form");
+  const inputName = getRequiredElement<HTMLInputElement>("#name", frmAddUser);
+  const inputAge = getRequiredElement<HTMLInputElement>("#age", frmAddUser);
+  const cbIsActive = getRequiredElement<HTMLInputElement>(
+    "#isActive",
+    frmAddUser
   );
-  if (students.length > 0) return;
-  const item = document.createElement("li");
-  item.textContent = "Listan är tom...";
-  listContainer.appendChild(item);
+
+  // Add event listeners
+  listContainer.addEventListener("click", handleStudentListClick);
+
+  frmAddUser.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const age = Number(inputAge.value?.trim());
+    const student: Student = {
+      id: generateId(undefined, getStudents()),
+      name: inputName.value?.trim(),
+      age: Number.isInteger(age) ? Number(age) : age,
+      isActive: cbIsActive.checked,
+    };
+
+    student.name &&
+      student.age &&
+      Number.isInteger(student.age) &&
+      createStudent(student) &&
+      renderStudentList(listContainer);
+  });
+
+  // Initialise data and render list
+  checkIfDataIsInitialized();
+  renderStudentList(listContainer);
 }
 
-frmAddUser.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const age = Number(inputAge.value?.trim());
-  const student: Student = {
-    id: generateId(undefined, getStudents()),
-    name: inputName.value?.trim(),
-    age: Number.isInteger(age) ? Number(age) : age,
-    isActive: cbIsActive.checked,
-  };
-
-  student.name &&
-    student.age &&
-    Number.isInteger(student.age) &&
-    createStudent(student) &&
-    renderStudentList();
-});
+// Entry point
+document.addEventListener("DOMContentLoaded", intialisePage);
