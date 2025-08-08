@@ -1,41 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Student Catalog</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script type="module" src="dist/main.js"></script>
-  </head>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Catalog</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script type="module" src="dist/main.js"></script>
+</head>
 
 <body>
   <h1>Student list</h1>
-  <form id="sort-form">
-    <fieldset>
-      <legend>Sort List</legend>
-      <select name="areas" id="sort-areas" required>
-        <option value="">--Please choose an option--</option>
-      </select>
-      <select name="order" id="sort-order">
-        <option value="asc">Ascending</option>
-        <option value="desc">Descending</option>
-      </select>
-      <button>Sort</button>
-    </fieldset>
-  </form>
-  <div id="student-list"></div>
-  <form class="add-user-form">
-    <fieldset>
-      <legend>Add new student</legend>
-      <label for="name">Name</label>
-      <input type="text" id="name" name="name">
-      <label for="age">Age</label>
-      <input type="number" min=0 id="age" name="age">
-      <label for="isActive">Active</label>
-      <input type="checkbox" id="isActive" name="isActive">
-      <button type="submit">Add</button>
-    </fieldset>
-  </form>
+  <div id="student-list">
+    <form id="sort-form">
+      <fieldset>
+        <legend>Sort List</legend>
+        <select name="areas" id="sort-areas" required>
+          <option value="">--Please choose an option--</option>
+        </select>
+        <select name="order" id="sort-order">
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+        <button>Sort</button>
+      </fieldset>
+    </form>
+    <form class="add-user-form">
+      <fieldset>
+        <legend>Add new student</legend>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name">
+        <label for="age">Age</label>
+        <input type="number" min=0 id="age" name="age">
+        <label for="isActive">Active</label>
+        <input type="checkbox" id="isActive" name="isActive">
+        <button type="submit">Add</button>
+      </fieldset>
+    </form>
+    <ul id="student-ul"></ul>
+  </div>
 </body>
 
 </html>
