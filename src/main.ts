@@ -1,5 +1,4 @@
 import { BUTTON_ACTIONS } from "./config.js";
-import { load } from "./data/student.js";
 import { Student } from "./models/student.js";
 import {
   checkIfDataIsInitialized,
@@ -12,7 +11,7 @@ import { createStudentListItem } from "./ui/createStudentListItem.js";
 import { getRequiredElement } from "./utils/domHelpers.js";
 import { generateId } from "./utils/generateId.js";
 
-const listContainer = getRequiredElement<HTMLUListElement>("#student-list");
+const listContainer = getRequiredElement<HTMLUListElement>("#student-ul");
 const frmAddUser = getRequiredElement<HTMLFormElement>("form.add-user-form");
 const inputName = getRequiredElement<HTMLInputElement>("#name", frmAddUser);
 const inputAge = getRequiredElement<HTMLInputElement>("#age", frmAddUser);
@@ -55,16 +54,16 @@ function handleStudentListClick(e: MouseEvent): void {
   const target = e.target as HTMLElement;
 
   // Find parent button of the target
-  const btn = target.closest<HTMLElement>("[data-action]");
-  if (!btn) return;
+  const actionElement = target.closest<HTMLElement>("[data-action]");
+  if (!actionElement) return;
 
   // Find parent list item of the button
-  const listItem = btn.closest<HTMLLIElement>("li[data-student-id]");
+  const listItem = actionElement.closest<HTMLLIElement>("li[data-student-id]");
   if (!listItem)
-    throw new Error(`No list item found with id for button ${btn}`);
+    throw new Error(`No list item found with id for button ${actionElement}`);
 
   const studentId = Number(listItem.dataset["studentId"]);
-  const action = btn.dataset["action"];
+  const action = actionElement.dataset["action"];
 
   // Call appropriate function for action
   switch (action) {
@@ -77,14 +76,7 @@ function handleStudentListClick(e: MouseEvent): void {
   }
 }
 
-listContainer.addEventListener("click", (event) => {
-  const target = event.target as HTMLElement;
-  switch (target.tagName) {
-    case "INPUT":
-      toggleStudentActive(target);
-      break;
-  }
-});
+listContainer.addEventListener("click", handleStudentListClick);
 
 function renderStudentList(): void {
   listContainer.textContent = "";
