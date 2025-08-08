@@ -1,27 +1,51 @@
 import { load, save } from "../data/student.js";
 import { Student } from "../models/student.js";
 
-
 export function checkIfDataIsInitialized() {
   const studentList = load();
-  if (studentList === undefined) // "Index is initialized previously"
+  if (studentList === undefined)
+    // "Index is initialized previously"
     initializeData();
 }
 
+export const getStudents = () => {
+  let studentList = load();
+  if (studentList === undefined) {
+    return [];
+  }
+  return studentList;
+};
 
 export const deleteStudent = (id: number) => {
   const studentList = load();
-  const studentToRemove = studentList?.find(x => x.id === Number(id));
-  if (!(studentList && studentToRemove))
-    return;
-  save({ data: studentList.splice(studentList.indexOf(studentToRemove), 1) })
-}
+  const studentToRemove = studentList?.find((x) => x.id === Number(id));
+  if (!(studentList && studentToRemove)) return;
+  studentList.splice(studentList.indexOf(studentToRemove), 1);
+  save({ data: studentList });
+};
 
 export function createStudent(student: Student): Student {
   const studentList = load();
-  studentList !== undefined && studentList.push(student) && save({data: studentList});
+  studentList !== undefined &&
+    studentList.push(student) &&
+    save({ data: studentList });
   return student; // for chaining possibillities
 }
+
+export const updateStudent = (student: Student) => {
+  const studentList = getStudents();
+  if (studentList === undefined) return;
+
+  const index = studentList?.findIndex((d) => d.id === student.id);
+  if (index < 0) return;
+
+  const studentToUpdate = studentList[index];
+  if (!studentToUpdate) return;
+
+  studentToUpdate.isActive = student.isActive;
+  studentList[index] = studentToUpdate;
+  save({ data: studentList });
+};
 
 export function initializeData() {
   const initialData: Student[] = [
@@ -49,7 +73,7 @@ export function initializeData() {
     { id: 121, name: "Julia Sandberg", age: 22, isActive: false },
     { id: 122, name: "Melvin Engström", age: 22, isActive: true },
     { id: 123, name: "Tilde Hellström", age: 22, isActive: true },
-    { id: 124, name: "Leo Åberg", age: 21, isActive: false }
+    { id: 124, name: "Leo Åberg", age: 21, isActive: false },
   ];
   save({ data: initialData });
 }
