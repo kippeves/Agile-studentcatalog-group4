@@ -41,6 +41,7 @@ function toggleStudentActive(target: HTMLElement): void {
     if (foundStudent === undefined)
         return;
 
+    foundStudent.isActive = input.checked;
     updateStudent(foundStudent);
     renderStudentList();
 }

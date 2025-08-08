@@ -23,7 +23,7 @@ export const updateStudent = (student: Student) => {
   const studentList = getStudents();
   if (studentList === undefined)
     return;
-
+  
   const index = studentList?.findIndex(d => d.id === student.id);
   if (index < 0)
     return;
