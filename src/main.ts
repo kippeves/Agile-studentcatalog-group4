@@ -1,10 +1,14 @@
 import { BUTTON_ACTIONS } from "./config.js";
+import { load } from "./data/student.js";
 import { Student } from "./models/student.js";
-import { checkIfDataIsInitialized, deleteStudent } from "./services/student.js";
+import {
+  checkIfDataIsInitialized,
+  createStudent,
+  deleteStudent,
+} from "./services/student.js";
 import { renderStudentList } from "./ui/studentList.js";
 import { getRequiredElement } from "./utils/domHelpers.js";
 import { generateId } from "./utils/generateId.js";
-import { load } from "./data/student.js";
 
 function handleStudentDeletion(
   listContainer: HTMLElement,
@@ -72,7 +76,7 @@ function intialisePage(): void {
       student.age &&
       Number.isInteger(student.age) &&
       createStudent(student) &&
-      renderStudentList();
+      renderStudentList(listContainer);
   });
 
   // Initialise data and render list
