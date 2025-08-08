@@ -1,18 +1,14 @@
 import { load, save } from "../data/student.js";
-import { Student } from "../models/student.js";
-
-export function checkIfDataIsInitialized() {
-  const studentList = load();
-  if (studentList === undefined) // "Index is initialized previously"
-    initializeData();
-}
+import { Student } from "../models/student.js"
 
 export const getStudents = () => {
-  const data = load();
-  if(data === undefined) {
-    return [];
+  let studentList = load();
+  if(studentList === undefined) {
+    console.info("initializeData");
+    initializeData();
+    studentList = load();
   }
-  return data;
+  return studentList;
 }
 
 export const deleteStudent = (id: number) => {

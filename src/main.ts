@@ -1,11 +1,10 @@
 
 import { getRequiredElement } from "./utils/domHelpers.js";
-import { checkIfDataIsInitialized, getStudents, updateStudent } from "./services/student.js";
+import { getStudents, updateStudent } from "./services/student.js";
 import { createStudentListItem } from "./ui/createStudentListItem.js";
 
 const listContainer = getRequiredElement<HTMLUListElement>("#student-ul");
 
-checkIfDataIsInitialized();
 renderStudentList();
 
 listContainer.addEventListener("click", (event) => {
