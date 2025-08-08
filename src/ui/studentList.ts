@@ -1,6 +1,5 @@
 import { BUTTON_ACTIONS, ICON_PATHS } from "../config.js";
 import { Student } from "../models/student.js";
-import { getStudents } from "../services/student.js";
 
 function createStudentListItem(student: Student): HTMLLIElement {
   const isChecked = student.isActive;
@@ -13,12 +12,10 @@ function createStudentListItem(student: Student): HTMLLIElement {
     <span class="student-age">${student.age}</span>
     <label class="visually-hidden">
       Active
-      <input type="checkbox" data-action=${
-        BUTTON_ACTIONS.TOGGLE_ACTIVE
-      } name="isActiveInput" ${isChecked ? "checked" : ""}>
+      <input type="checkbox" data-action=${BUTTON_ACTIONS.TOGGLE_ACTIVE
+    } name="isActiveInput" ${isChecked ? "checked" : ""}>
     </lnpx tscabel>
-    <button type="button" data-action=${
-      BUTTON_ACTIONS.DELETE_STUDENT
+    <button type="button" data-action=${BUTTON_ACTIONS.DELETE_STUDENT
     } aria-label="Delete student">
         <img src=${ICON_PATHS.DELETE_TRASH} alt="" aria-hidden="true">
     </button>
@@ -27,11 +24,9 @@ function createStudentListItem(student: Student): HTMLLIElement {
   return li;
 }
 
-export function renderStudentList(listContainer: HTMLElement): void {
+export function renderStudentList(students: Student[], listContainer: HTMLElement): void {
   listContainer.textContent = "";
   // Placeholder array
-  const students = getStudents();
-  if (!students) return;
   students.forEach((item) =>
     listContainer.appendChild(createStudentListItem(item))
   );
