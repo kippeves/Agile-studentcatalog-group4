@@ -1,7 +1,8 @@
 import { BUTTON_ACTIONS, ICON_PATHS } from "../config.js";
 import { Student } from "../models/student.js";
+import { getStudents } from "../services/student.js";
 
-export function createStudentListItem(student: Student): HTMLLIElement {
+function createStudentListItem(student: Student): HTMLLIElement {
   const isChecked = student.isActive;
 
   const li = document.createElement("li");
@@ -24,4 +25,18 @@ export function createStudentListItem(student: Student): HTMLLIElement {
   `;
 
   return li;
+}
+
+export function renderStudentList(listContainer: HTMLElement): void {
+  listContainer.textContent = "";
+  // Placeholder array
+  const students = getStudents();
+  if (!students) return;
+  students.forEach((item) =>
+    listContainer.appendChild(createStudentListItem(item))
+  );
+  if (students.length > 0) return;
+  const item = document.createElement("li");
+  item.textContent = "Listan är tom...";
+  listContainer.appendChild(item);
 }
