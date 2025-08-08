@@ -26,13 +26,13 @@ listContainer.addEventListener("click", (event) => {
 
 inputSearch.addEventListener("input", (event) => {
     const target = event.target as HTMLInputElement;
-    if(searchTimeout !== undefined) {
+    if (searchTimeout !== undefined) {
         window.clearTimeout(searchTimeout);
     }
     searchTimeout = window.setTimeout(() => {
         findStudents(target.value);
-    },500);
-    
+    }, 500);
+
 });
 
 function renderStudentList(): void {
@@ -79,6 +79,21 @@ function toggleStudentActive(target: HTMLElement): void {
 }
 
 function findStudents(search: string): void {
-    console.log(search);
-    
+    const studentList = getStudents();
+
+    function likeString(x: string, y: string): boolean {
+        return x.toLowerCase().indexOf(y.toLowerCase()) >= 0;
+    }
+    const found = studentList.filter((item) => likeString(item.name, search));
+
+    const list = listContainer.querySelectorAll("li") as NodeListOf<HTMLElement>;
+    list.forEach(item => {
+        let hide = true;
+        const itemId = item.dataset["studentId"];
+        if (itemId !== undefined) {
+            const index = found.findIndex(x => x.id === parseInt(itemId));
+            hide = (index < 0);
+        }
+        item.style.display = (hide ? "none" : "block");
+    });
 }
