@@ -5,18 +5,21 @@ function createStudentListItem(student: Student): HTMLLIElement {
   const isChecked = student.isActive;
 
   const li = document.createElement("li");
+  li.setAttribute("role", "list");
   li.dataset["studentId"] = student.id.toString();
+  li.classList.add("student-list__item");
 
   li.innerHTML = `
-    <span class="student-name">${student.name}</span>
-    <span class="student-age">${student.age}</span>
-    <label class="visually-hidden">
-      Active
-      <input type="checkbox" data-action=${BUTTON_ACTIONS.TOGGLE_ACTIVE
-    } name="isActiveInput" ${isChecked ? "checked" : ""}>
-    </lnpx tscabel>
-    <button type="button" data-action=${BUTTON_ACTIONS.DELETE_STUDENT
-    } aria-label="Delete student">
+    <span class="justify-self-start">${student.name}</span>
+    <span>${student.age}</span>
+    <input type="checkbox" name="active-students" value=${
+      student.id
+    } data-action=${BUTTON_ACTIONS.TOGGLE_ACTIVE} aria-label="Mark ${
+    student.name
+  } as active" ${isChecked ? "checked" : ""}>
+    <button type="button" data-action=${
+      BUTTON_ACTIONS.DELETE_STUDENT
+    } class="no-border" aria-label="Delete student">
         <img src=${ICON_PATHS.DELETE_TRASH} alt="" aria-hidden="true">
     </button>
   `;
@@ -24,13 +27,33 @@ function createStudentListItem(student: Student): HTMLLIElement {
   return li;
 }
 
-export function renderStudentList(students: Student[], listContainer: HTMLElement): void {
+function createStudentListHeading(): HTMLLIElement {
+  const headingLi = document.createElement("li");
+  headingLi.setAttribute("role", "list");
+  headingLi.classList.add("student-list__heading", "student-list__item");
+
+  headingLi.innerHTML = `
+    <span class="justify-self-start">Student</span>
+    <span>Age</span>
+    <span id="is-active-heading">Active</span>
+  `;
+
+  return headingLi;
+}
+
+export function renderStudentList(
+  students: Student[],
+  listContainer: HTMLElement
+): void {
   listContainer.textContent = "";
-  // Placeholder array
-  students.forEach((item) =>
-    listContainer.appendChild(createStudentListItem(item))
-  );
+  const frag = document.createDocumentFragment();
+  frag.appendChild(createStudentListHeading());
+
+  students.forEach((item) => frag.appendChild(createStudentListItem(item)));
+  listContainer.appendChild(frag);
   if (students.length > 0) return;
+
+  // Display message if student list empty
   const item = document.createElement("li");
   item.textContent = "Listan är tom...";
   listContainer.appendChild(item);
