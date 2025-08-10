@@ -14,16 +14,14 @@ import { StudentSortKeysType } from "./config.js";
 import { returnSortedList } from "./ui/sortStudentList.js";
 
 const listContainer = getRequiredElement<HTMLUListElement>("#student-ul");
-const select = getRequiredElement<HTMLSelectElement>("#sort-areas")
+const select = getRequiredElement<HTMLSelectElement>("#sort-areas");
 const frmSort = getRequiredElement<HTMLFormElement>("form#sort-form");
 
 addSortAreas();
 checkIfDataIsInitialized();
 loadStudentList();
 
-function handleStudentDeletion(
-  studentId: number
-): void {
+function handleStudentDeletion(studentId: number): void {
   try {
     deleteStudent(studentId);
     loadStudentList();
@@ -78,15 +76,18 @@ loadStudentList();
 
 function loadStudentList() {
   const initialList = load();
-  if (!initialList)
-    return;
+  if (!initialList) return;
   renderStudentList(initialList, listContainer);
 }
 
 function addSortAreas() {
-  type selectOpt = { value: string; text: string; };
-  let options: selectOpt[] = [{ value: "name", text: "Name" }, { value: "age", "text": "Age", }, { value: "isActive", text: "Is Active" }];
-  let items = options.map(i => {
+  type selectOpt = { value: string; text: string };
+  let options: selectOpt[] = [
+    { value: "name", text: "Name" },
+    { value: "age", text: "Age" },
+    { value: "isActive", text: "Is Active" },
+  ];
+  let items = options.map((i) => {
     const option = document.createElement("option");
     option.value = i.value;
     option.text = i.text;
@@ -98,7 +99,9 @@ function addSortAreas() {
 function intialisePage(): void {
   // Find DOM elements
   const listContainer = getRequiredElement<HTMLUListElement>("#student-ul");
-  const frmAddUser = getRequiredElement<HTMLFormElement>("form.add-user-form");
+  const frmAddUser = getRequiredElement<HTMLFormElement>(
+    "form#add-student-form"
+  );
   const inputName = getRequiredElement<HTMLInputElement>("#name", frmAddUser);
   const inputAge = getRequiredElement<HTMLInputElement>("#age", frmAddUser);
   const cbIsActive = getRequiredElement<HTMLInputElement>(
@@ -109,37 +112,36 @@ function intialisePage(): void {
   // Add event listeners
   listContainer.addEventListener("click", handleStudentListClick);
 
-frmSort.addEventListener("submit", e => {
-  e.preventDefault();
-  const data = new FormData(frmSort);
-  const area = data.get("areas") as StudentSortKeysType;
-  const order = data.get("order")?.toString();
-  if (!order)
-    return;
-  const sortedStudentList = returnSortedList(area, order)
-  renderStudentList(sortedStudentList!, listContainer);
-})
+  frmSort.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const data = new FormData(frmSort);
+    const area = data.get("areas") as StudentSortKeysType;
+    const order = data.get("order")?.toString();
+    if (!order) return;
+    const sortedStudentList = returnSortedList(area, order);
+    renderStudentList(sortedStudentList!, listContainer);
+  });
 
-frmAddUser.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const age = Number(inputAge.value?.trim());
-  const student: Student = {
-    id: generateId(undefined, getStudents()),
-    name: inputName.value?.trim(),
-    age: Number.isInteger(age) ? Number(age) : age,
-    isActive: cbIsActive.checked,
-  };
+  frmAddUser.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const age = Number(inputAge.value?.trim());
+    const student: Student = {
+      id: generateId(undefined, getStudents()),
+      name: inputName.value?.trim(),
+      age: Number.isInteger(age) ? Number(age) : age,
+      isActive: cbIsActive.checked,
+    };
 
-  student.name &&
-    student.age &&
-    Number.isInteger(student.age) &&
-    createStudent(student) &&
-    loadStudentList();
-});
+    student.name &&
+      student.age &&
+      Number.isInteger(student.age) &&
+      createStudent(student) &&
+      loadStudentList();
+  });
 
-// Initialise data and render list
-checkIfDataIsInitialized();
-loadStudentList();
+  // Initialise data and render list
+  checkIfDataIsInitialized();
+  loadStudentList();
 }
 
 // Entry point
