@@ -1,49 +1,68 @@
-import { BUTTON_ACTIONS } from "./config.js";
+import { BUTTON_ACTIONS, StudentSortKeysType } from "./config.js";
 import { Student } from "./models/student.js";
 import {
   getStudents,
   updateStudent,
   deleteStudent,
+  addStudent,
+  getSortedStudents,
+  initialiseStudents,
+  setSortCriteria,
 } from "./services/student.js";
+import { addSortAreas } from "./ui/sortForm.js";
 import { renderStudentList } from "./ui/studentList.js";
 import { getRequiredElement } from "./utils/domHelpers.js";
 import { generateId } from "./utils/generateId.js";
-import { checkIfDataIsInitialized, createStudent } from "./services/student.js";
-import { load } from "./data/student.js";
-import { StudentSortKeysType } from "./config.js";
-import { returnSortedList } from "./ui/sortStudentList.js";
 
-const listContainer = getRequiredElement<HTMLUListElement>("#student-ul");
-const select = getRequiredElement<HTMLSelectElement>("#sort-areas");
-const frmSort = getRequiredElement<HTMLFormElement>("form#sort-form");
+// Cached DOM elements
+let frmSort: HTMLFormElement;
+let selectSortAreas: HTMLSelectElement;
+let studentListEl: HTMLUListElement;
+let frmAddStudent: HTMLFormElement;
+let inputName: HTMLInputElement;
+let inputAge: HTMLInputElement;
+let cbIsActive: HTMLInputElement;
 
-addSortAreas();
-checkIfDataIsInitialized();
-loadStudentList();
+/**
+ * Refreshes the UI be re-rendering the student list in its current sort order
+ */
+function refreshUI(): void {
+  renderStudentList(getSortedStudents(), studentListEl);
+}
 
+/**
+ * Handles deletion of a student by ID and refreshes the UI
+ * @param studentId The ID of the student to delete
+ */
 function handleStudentDeletion(studentId: number): void {
   try {
     deleteStudent(studentId);
-    loadStudentList();
+    refreshUI();
   } catch (error) {
-    alert("Could not delete student - please refresh the page");
+    alert("Could not delete student - please refresh and try again!");
   }
 }
 
-function toggleStudentActive(target: HTMLElement): void {
-  const input = target as HTMLInputElement;
-  const val = input.closest("li")?.dataset["studentId"];
+/**
+ * Updates a student's active status based on checkbox state
+ * @param target The HTML element that triggered the event
+ * @param studentId The ID of the student to update
+ */
+function setStudentActiveStatus(target: HTMLElement, studentId: number): void {
+  if (!(target instanceof HTMLInputElement)) return;
 
-  if (val === undefined || isNaN(parseInt(val))) return;
-
-  const foundStudent = getStudents()?.find((x) => x.id === parseInt(val));
-  if (foundStudent === undefined) return;
-
-  foundStudent.isActive = input.checked;
-  updateStudent(foundStudent);
-  loadStudentList();
+  try {
+    updateStudent(studentId, target.checked);
+    refreshUI();
+  } catch (error) {
+    alert("Could not update student - please refresh and try again!");
+  }
 }
 
+/**
+ * Handles click events on the student list to perform actions like delete or set active status
+ * @param e The mouse-click event
+ */
 function handleStudentListClick(e: MouseEvent): void {
   const target = e.target as HTMLElement;
 
@@ -65,84 +84,78 @@ function handleStudentListClick(e: MouseEvent): void {
       handleStudentDeletion(studentId);
       break;
     case BUTTON_ACTIONS.TOGGLE_ACTIVE:
-      toggleStudentActive(target);
-      loadStudentList();
+      setStudentActiveStatus(target, studentId);
       break;
+    default:
+      console.log("Unknown action", action);
   }
 }
 
-listContainer.addEventListener("click", handleStudentListClick);
-loadStudentList();
+/**
+ * Handles form submission for sorting students by criteria and order
+ * @param e The form submit event
+ */
+function handleSorting(e: SubmitEvent): void {
+  e.preventDefault();
+  const data = new FormData(frmSort);
+  const area = data.get("areas") as StudentSortKeysType;
+  const order = data.get("order")?.toString();
+  if (!order) return;
 
-function loadStudentList() {
-  const initialList = load();
-  if (!initialList) return;
-  renderStudentList(initialList, listContainer);
+  setSortCriteria(area, order);
+  refreshUI();
 }
 
-function addSortAreas() {
-  type selectOpt = { value: string; text: string };
-  let options: selectOpt[] = [
-    { value: "name", text: "Name" },
-    { value: "age", text: "Age" },
-    { value: "isActive", text: "Is Active" },
-  ];
-  let items = options.map((i) => {
-    const option = document.createElement("option");
-    option.value = i.value;
-    option.text = i.text;
-    return option;
-  });
-  select.replaceChildren(...[select.children[0]!, ...items]);
+/**
+ * Handles form submission for adding a new student
+ * @param e The form submit event
+ */
+function handleAddStudent(e: SubmitEvent): void {
+  e.preventDefault();
+  const age = Number(inputAge.value?.trim());
+
+  const student: Student = {
+    id: generateId(undefined, getStudents()),
+    name: inputName.value?.trim(),
+    age: Number.isInteger(age) ? Number(age) : NaN,
+    isActive: cbIsActive.checked,
+  };
+
+  if (student.name && Number.isInteger(student.age)) {
+    try {
+      addStudent(student);
+      refreshUI();
+    } catch (error) {
+      alert("Could not add student - please try again!");
+    }
+  }
 }
 
-function intialisePage(): void {
-  // Find DOM elements
-  const listContainer = getRequiredElement<HTMLUListElement>("#student-ul");
-  const frmAddUser = getRequiredElement<HTMLFormElement>(
-    "form#add-student-form"
-  );
-  const inputName = getRequiredElement<HTMLInputElement>("#name", frmAddUser);
-  const inputAge = getRequiredElement<HTMLInputElement>("#age", frmAddUser);
-  const cbIsActive = getRequiredElement<HTMLInputElement>(
-    "#isActive",
-    frmAddUser
-  );
+/**
+ * Initialises the page by caching DOM elements, adding event listeneres and rendering initial student data
+ */
+function initialisePage(): void {
+  // Cache DOM elements
+  frmSort = getRequiredElement<HTMLFormElement>("form#sort-form");
+  selectSortAreas = getRequiredElement<HTMLSelectElement>("#sort-areas");
+  studentListEl = getRequiredElement<HTMLUListElement>("#student-ul");
+  frmAddStudent = getRequiredElement<HTMLFormElement>("form#add-student-form");
+  inputName = getRequiredElement<HTMLInputElement>("#name", frmAddStudent);
+  inputAge = getRequiredElement<HTMLInputElement>("#age", frmAddStudent);
+  cbIsActive = getRequiredElement<HTMLInputElement>("#isActive", frmAddStudent);
 
   // Add event listeners
-  listContainer.addEventListener("click", handleStudentListClick);
+  studentListEl.addEventListener("click", handleStudentListClick);
+  frmSort.addEventListener("submit", handleSorting);
+  frmAddStudent.addEventListener("submit", handleAddStudent);
 
-  frmSort.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const data = new FormData(frmSort);
-    const area = data.get("areas") as StudentSortKeysType;
-    const order = data.get("order")?.toString();
-    if (!order) return;
-    const sortedStudentList = returnSortedList(area, order);
-    renderStudentList(sortedStudentList!, listContainer);
-  });
-
-  frmAddUser.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const age = Number(inputAge.value?.trim());
-    const student: Student = {
-      id: generateId(undefined, getStudents()),
-      name: inputName.value?.trim(),
-      age: Number.isInteger(age) ? Number(age) : age,
-      isActive: cbIsActive.checked,
-    };
-
-    student.name &&
-      student.age &&
-      Number.isInteger(student.age) &&
-      createStudent(student) &&
-      loadStudentList();
-  });
+  // Populate 'sort' dropdown
+  addSortAreas(selectSortAreas);
 
   // Initialise data and render list
-  checkIfDataIsInitialized();
-  loadStudentList();
+  initialiseStudents();
+  refreshUI();
 }
 
 // Entry point
-document.addEventListener("DOMContentLoaded", intialisePage);
+document.addEventListener("DOMContentLoaded", initialisePage);

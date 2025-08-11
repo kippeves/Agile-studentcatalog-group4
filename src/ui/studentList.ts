@@ -1,6 +1,11 @@
 import { BUTTON_ACTIONS, ICON_PATHS } from "../config.js";
 import { Student } from "../models/student.js";
 
+/**
+ * Creates a list item element for a single student with interactive controls
+ * @param student The Student object to create a list item for
+ * @returns HTML list item element containing student data and controls
+ */
 function createStudentListItem(student: Student): HTMLLIElement {
   const isChecked = student.isActive;
 
@@ -27,6 +32,10 @@ function createStudentListItem(student: Student): HTMLLIElement {
   return li;
 }
 
+/**
+ * Creates a header row for the student list with column labels
+ * @returns HTML list item element containing column headers
+ */
 function createStudentListHeading(): HTMLLIElement {
   const headingLi = document.createElement("li");
   headingLi.setAttribute("role", "list");
@@ -41,6 +50,11 @@ function createStudentListHeading(): HTMLLIElement {
   return headingLi;
 }
 
+/**
+ * Renders the complete student list with heading and student items
+ * @param students Array of students to render
+ * @param listContainer The HTML element to render the list into
+ */
 export function renderStudentList(
   students: Student[],
   listContainer: HTMLElement
@@ -55,6 +69,7 @@ export function renderStudentList(
 
   // Display message if student list empty
   const item = document.createElement("li");
+  item.setAttribute("role", "list");
   item.textContent = "Listan är tom...";
   listContainer.appendChild(item);
 }
